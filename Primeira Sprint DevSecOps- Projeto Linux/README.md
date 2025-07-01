@@ -24,14 +24,14 @@ Implementar um ambiente de servidor web na nuvem da AWS, com um sistema de monit
     * **`sgprivada`**: Reservado para recursos futuros que não necessitem de acesso direto à internet.
 4.  **Instância EC2:** Uma máquina virtual **Ubuntu do tipo `t3.micro`** onde o servidor Nginx e o script de monitoramento são executados.
 
-## Passo a Passo da Implementação
 
+## Passo a Passo da Implementação
 ### 1. Configuração do Ambiente na AWS
 
 A infraestrutura foi provisionada diretamente no Console da AWS.
 
 * **Criação da VPC e Sub-redes:** Foi criada a VPC **`vpc-lais`** com o bloco CIDR `10.0.0.0/16`, contendo duas sub-redes públicas e duas privadas, e o Internet Gateway **`gateway-vpc-lais`**.
-* **Criação do Security Group:** Para a instância web, foi configurado o Security Group **`sgpublica`**. As regras de entrada foram definidas para permitir tráfego na `Porta 80 (HTTP)` de qualquer origem e na `Porta 22 (SSH)` de uma fonte segura.
+* **Criação do Security Group:** Para a instância web, foi configurado o Security Group **`sgpublica`**. As regras de entrada foram definidas para permitir tráfego na `Porta 80 (HTTP)` e na `Porta 22 (SSH)`.
 * **Lançamento da Instância EC2:** Uma instância foi lançada com as seguintes configurações:
     * **Nome:** `PROJETO LINUX PB`
     * **AMI:** Ubuntu Server 24.04 LTS
@@ -43,83 +43,90 @@ A infraestrutura foi provisionada diretamente no Console da AWS.
 
 Com o acesso SSH estabelecido, os seguintes passos foram executados para instalar e configurar o servidor web na instância EC2.
 
-**1. Instalação do Nginx**
-Primeiro, os pacotes do sistema foram atualizados e, em seguida, o Nginx foi instalado.
-
+**1. Instalação do Nginx:**
 ```bash
-# Atualiza a lista de pacotes e atualiza o sistema
-sudo apt update && sudo apt upgrade -y
-
-# Instala o Nginx
-sudo apt install nginx -y
+# Atualização dos pacotes e instalação do Nginx
+sudo apt update && sudo apt install nginx -y
 ```
-**2. Verificação do Serviço**
 
-Após a instalação, foi verificado se o serviço do Nginx estava ativo (`running`) e habilitado (`enabled`) para iniciar junto com o sistema, garantindo sua resiliência.
-
+**2. Verificação do Serviço:**
 ```bash
+# Verifica se o serviço do Nginx está ativo e habilitado
 sudo systemctl status nginx
 ```
-**3. Criação da Página de Status (`index.html`)**
 
-Uma página de status personalizada foi criada para substituir a página padrão do Nginx.
-
+**3. Criação da Página de Status (`index.html`):**
 ```bash
 # Comando para criar e editar a página no diretório padrão do Nginx
 sudo nano /var/www/html/index.html
 ```
 Dentro deste arquivo foi colado o código HTML/CSS customizado para exibir a página de status "Online" do servidor.
 
-### 3. Implementação do Monitoramento
-
-O coração do projeto é um sistema de monitoramento customizado, criado com um script em Bash e automatizado com Cron para garantir verificações contínuas.
-
-**1. O Script de Monitoramento (`monitor.sh`)**
-
-Foi desenvolvido um script em Bash para centralizar toda a lógica de verificação e alerta.
-
-* **Funcionamento Principal:** O script utiliza o comando `curl` para fazer uma requisição HTTP ao servidor web. Ele foi configurado para extrair apenas o código de status da resposta (ex: `200` para sucesso, `502` para falha, etc.).
-* **Lógica Condicional:** Um bloco `if/else` analisa o código de status:
-    * **Se o status for `200 OK`**, o script entende que o site está saudável. Ele então formata uma mensagem de "SUCESSO", com data e hora, e a registra no arquivo de log. Nenhuma notificação é enviada para evitar ruído.
-    * **Se o status for qualquer outro**, o script trata como uma falha. Ele registra uma mensagem de "FALHA" no log e, em seguida, constrói uma mensagem de alerta formatada para o Telegram. Essa mensagem inclui a origem do erro (Servidor AWS), o status code recebido e o horário, e é enviada via `curl` para a API do Bot do Telegram.
-
-**2. Gerenciamento do Arquivo de Log**
-
-Para manter um histórico de todas as verificações, foi configurado um arquivo de log.
-
-* **Localização:** `/var/log/monitoramento.log`, seguindo as convenções de armazenamento de logs do Linux.
-* **Criação e Permissão:** Foi identificado que o `cron` executa scripts de forma não-interativa e não consegue usar `sudo` para obter senhas. Para contornar isso, o arquivo de log foi criado manualmente com `sudo touch` e, em seguida, a propriedade do arquivo foi transferida para o usuário da instância (`ubuntu`) com `sudo chown`. Isso garante que o script, mesmo quando executado pelo `cron`, tenha permissão para escrever no log.
-
 ### 3. Configuração do Canal de Alertas (Telegram)
 
 Para que o script pudesse enviar notificações, foi necessário configurar um bot no Telegram.
 
 **1. Criação do Bot e Obtenção do `BOT_TOKEN`:**
-   * Uma conversa foi iniciada com o `@BotFather` no Telegram.
-   * Utilizando o comando `/newbot`, um novo bot foi criado, definindo seu nome e nome de usuário.
-   * Ao final do processo, o BotFather forneceu o **`BOT_TOKEN`**, uma chave única de acesso à API, que foi armazenada com segurança.
+   * Uma conversa foi iniciada com o `@BotFather` no Telegram e, com o comando `/newbot`, um novo bot foi registrado. Ao final, o BotFather forneceu o **`BOT_TOKEN`**.
 
 **2. Obtenção do `CHAT_ID`:**
-   * Para saber para qual conversa enviar a mensagem, foi necessário obter o `CHAT_ID`.
-   * Primeiro, uma mensagem foi enviada para o bot recém-criado para iniciar uma conversa.
-   * Em seguida, a seguinte URL foi acessada no navegador (substituindo o token):
-     `https://api.telegram.org/bot<SEU_BOT_TOKEN>/getUpdates`
-   * No resultado JSON, o ID foi localizado dentro da estrutura `message` -> `chat` -> `id`. Este número é o **`CHAT_ID`**
+   * Após iniciar uma conversa com o novo bot, a URL `https://api.telegram.org/bot<SEU_BOT_TOKEN>/getUpdates` foi acessada para obter o **`CHAT_ID`** da conversa, localizado no caminho `message.chat.id` do JSON de resposta.
 
-**4. Automação com Cron**
+### 4. Implementação do Monitoramento
 
-Para que o monitoramento fosse contínuo e autônomo, o agendador de tarefas `cron` foi utilizado.
+O coração do projeto é um sistema de monitoramento customizado, criado com um script em Bash e automatizado com Cron.
 
-* **Configuração:** O `crontab` do usuário foi editado com o comando `crontab -e`.
-* **Regra de Agendamento:** Foi inserida a seguinte regra para executar o script a cada minuto de forma ininterrupta:
+**1. O Script de Monitoramento (`monitor.sh`)**
+
+O script abaixo foi salvo em `/home/ubuntu/scripts/monitor.sh` e tornado executável com `chmod +x`. Ele centraliza toda a lógica de verificação e alerta.
+
+* **Código-Fonte:**
+    ```bash
+    #!/bin/bash
+
+    # Configurações
+    URL_SITE="http://<IP_PUBLICO_DA_INSTANCIA>"
+    STATUS_ESPERADO=200
+    LOG_FILE="/var/log/monitoramento.log"
+
+    # Credenciais 
+    BOT_TOKEN="SEU_BOT_TOKEN_AQUI"
+    CHAT_ID="SEU_CHAT_ID_AQUI"
+
+    # --- Lógica ---
+    TIMESTAMP=$(date "+%d/%m/%Y %H:%M:%S")
+    STATUS_ATUAL=$(curl -s -o /dev/null -w "%{http_code}" "$URL_SITE")
+
+    if [ "$STATUS_ATUAL" -eq "$STATUS_ESPERADO" ]; then
+        MENSAGEM="[$TIMESTAMP] SUCESSO: Site $URL_SITE online. Status: $STATUS_ATUAL"
+        echo "$MENSAGEM" >> "$LOG_FILE"
+    else
+        MENSAGEM_LOG="[$TIMESTAMP] FALHA: Site $URL_SITE indisponível. Status: $STATUS_ATUAL"
+        echo "$MENSAGEM_LOG" >> "$LOG_FILE"
+
+        MENSAGEM_TELEGRAM="🚨 *ALERTA DE SERVIÇO* 🚨%0A%0A*Origem:* Servidor AWS ☁️%0A*Site:* *$URL_SITE* indisponível!%0A%0A*Status Code:* $STATUS_ATUAL%0A*Horário:* $TIMESTAMP"
+        URL_TELEGRAM="[https://api.telegram.org/bot$](https://api.telegram.org/bot$){BOT_TOKEN}/sendMessage"
+        
+        curl -s -X POST "$URL_TELEGRAM" -d chat_id="$CHAT_ID" -d text="$MENSAGEM_TELEGRAM" -d parse_mode="Markdown" > /dev/null
+    fi
     ```
-    * * * * * /home/ubuntu/scripts/monitor.sh
-    ```
-    Esta sintaxe garante que, independentemente da hora ou do dia, o script de verificação seja acionado, tornando o monitoramento um processo 24/7.
+
+**2. Gerenciamento do Arquivo de Log**
+
+Para manter um histórico das verificações e resolver questões de permissão do Cron, o arquivo de log foi criado e configurado manualmente:
+```bash
+sudo touch /var/log/monitoramento.log
+sudo chown ubuntu:ubuntu /var/log/monitoramento.log
+```
+
+**3. Automação com Cron**
+
+A tarefa foi agendada no `crontab` para executar o script a cada minuto com a seguinte regra:
+`* * * * * /home/ubuntu/scripts/monitor.sh`
 
 ## Testes e Validação
 
-Para validar a solução, foram executados os seguintes testes.
+Para validar a solução, foram executados os seguintes testes:
 
 1.  **Teste de Sucesso:** Acessando o IP público da instância EC2 em um navegador, a página de status foi exibida com sucesso.
 2.  **Teste de Falha:** O serviço do Nginx foi parado com `sudo systemctl stop nginx`. Em menos de um minuto, uma notificação de alerta foi recebida no Telegram.
