@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status do Servidor</title>
+    <style>
+        /* Importa uma fonte moderna do Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+        /* Reseta estilos padrão do navegador */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #121212; /* Fundo escuro */
+            color: #E0E0E0; /* Cor do texto principal */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 40px;
+            background-color: #1E1E1E; /* Fundo do card */
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px; /* Espaço entre a bolinha e o texto */
+            margin-bottom: 20px;
+        }
+
+        .status-circle {
+            width: 20px;
+            height: 20px;
+            background-color: #28a745; /* Verde para "Online" */
+            border-radius: 50%;
+            box-shadow: 0 0 15px #28a745;
+            animation: pulse 2s infinite; /* Animação de pulso */
+        }
+
+        .status-text {
+            font-size: 2rem; /* 32px */
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+        
+        h1 {
+            font-size: 1.5rem; /* 24px */
+            font-weight: 300;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        p {
+            font-size: 1rem; /* 16px */
+            color: #a0a0a0; /* Cor do texto secundário */
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 0.875rem; /* 14px */
+            color: #555;
+        }
+
+        /* Animação para o círculo de status */
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status-indicator">
+            <div class="status-circle"></div>
+            <span class="status-text">Online</span>
+        </div>
+
+        <h1>Servidor AWS em Operação</h1>
+        <p>Todos os sistemas estão funcionando normalmente.</p>
+        
+        <footer>
+            Monitorado por Laís Sansara | Para o PB Compass
+        </footer>
+    </div>
+</body>
+</html>
