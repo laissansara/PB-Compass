@@ -93,7 +93,7 @@ O script abaixo foi salvo em `/home/ubuntu/scripts/monitor.sh` e tornado execut√
     BOT_TOKEN="SEU_BOT_TOKEN_AQUI"
     CHAT_ID="SEU_CHAT_ID_AQUI"
 
-    # --- L√≥gica ---
+   
     TIMESTAMP=$(date "+%d/%m/%Y %H:%M:%S")
     STATUS_ATUAL=$(curl -s -o /dev/null -w "%{http_code}" "$URL_SITE")
 
