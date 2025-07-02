@@ -35,7 +35,6 @@ A infraestrutura foi provisionada diretamente no Console da AWS.
 * **Lançamento da Instância EC2:** Uma instância foi lançada com as seguintes configurações:
     * **Nome:** `PROJETO LINUX PB`
     * **AMI:** Ubuntu Server 24.04 LTS
-    * **Tipo de Instância:** `t3.micro`
     * **VPC e Sub-rede:** A instância foi alocada na VPC `vpc-lais`, especificamente na sub-rede pública `vpc-lais-subnet-public1-us-east-1a`.
     * **Security Group:** O grupo `sgpublica` foi associado para gerenciar o acesso.
 
