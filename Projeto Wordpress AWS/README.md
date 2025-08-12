@@ -27,7 +27,7 @@ desenhada para simular um ambiente de produção, onde a falha de um componente 
 * **Ubuntu Server 22.04 LTS:** Sistema operacional base para as instâncias EC2.
 * **Bash Scripting (`user-data`):** Script de automação para provisionamento e configuração completa das instâncias no momento da inicialização (instalação de pacotes, montagem de EFS, e orquestração do Docker).
 
-## Construção do projeto
+## Construção e aplicação do projeto
 ### Fundação da Rede (Configuração da VPC)
 
 A base de toda a infraestrutura foi a criação de uma Virtual Private Cloud (VPC) personalizada, que funciona como uma rede privada e isolada na nuvem. Para garantir a alta disponibilidade, a VPC foi configurada para operar em duas Zonas de Disponibilidade (AZs) distintas.
