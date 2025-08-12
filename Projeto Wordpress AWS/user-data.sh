@@ -66,7 +66,7 @@ services:
       WORDPRESS_DB_HOST: seu RDS
       WORDPRESS_DB_USER: seu user
       WORDPRESS_DB_PASSWORD: sua senha
-      WORDPRESS_DB_NAME: nome do seu bando de dados
+      WORDPRESS_DB_NAME: nome do seu banco de dados
     volumes:
       - /mnt/efs-data:/var/www/html
 EOF
