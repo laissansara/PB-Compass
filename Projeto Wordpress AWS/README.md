@@ -1,9 +1,35 @@
 # Projeto WordPress em Alta Disponibilidade na AWS
 
-### Introdução e Objetivo
+## Objetivo
 
-O objetivo central deste projeto foi a concepção e implementação de uma infraestrutura robusta escalável e de alta disponibilidade para hospedar uma aplicação WordPress na nuvem AWS. A arquitetura foi desenhada para simular um ambiente de produção, onde a falha de um componente individual não compromete a disponibilidade total do serviço, utilizando para isso os principais serviços gerenciados da AWS.
+O objetivo central deste projeto foi a concepção e implementação de uma infraestrutura robusta escalável e de alta disponibilidade para hospedar uma aplicação WordPress na nuvem AWS. A arquitetura foi 
+desenhada para simular um ambiente de produção, onde a falha de um componente individual não compromete a disponibilidade total do serviço, utilizando para isso os principais serviços gerenciados da AWS.
 
+## Tecnologias Utilizadas
+
+Este projeto foi construído utilizando um conjunto de tecnologias modernas para garantir uma arquitetura robusta e escalável na nuvem, com foco em automação e resiliência.
+
+### Cloud & Infraestrutura AWS
+* **Amazon VPC:** Criação de uma rede privada e isolada com sub-redes públicas e privadas.
+* **Amazon EC2:** Servidores virtuais (instâncias) para hospedar a aplicação.
+* **Auto Scaling Group:** Automação da escalabilidade e auto-recuperação (self-healing) das instâncias.
+* **Application Load Balancer (ALB):** Balanceamento de carga de tráfego HTTP entre as múltiplas instâncias.
+* **Amazon RDS:** Serviço de banco de dados relacional gerenciado (MySQL) para persistência dos dados do WordPress.
+* **Amazon EFS:** Sistema de arquivos de rede compartilhado e elástico para os arquivos de mídia do WordPress.
+* **Security Groups:** Firewall a nível de instância para controle detalhado do tráfego entre as camadas da aplicação.
+* **NAT Gateway & Internet Gateway:** Componentes da VPC para gerenciar a conectividade de rede com a internet de forma segura.
+
+### Aplicação e Containerização
+* **WordPress:** A aplicação principal do projeto.
+* **Docker:** Plataforma de containerização utilizada para empacotar e rodar a aplicação WordPress de forma isolada e consistente.
+* **Docker Compose:** Ferramenta para definir e orquestrar o serviço do WordPress dentro de cada instância EC2.
+
+
+### Automação e Sistema Operacional
+* **Ubuntu Server 22.04 LTS:** Sistema operacional base para as instâncias EC2.
+* **Bash Scripting (`user-data`):** Script de automação para provisionamento e configuração completa das instâncias no momento da inicialização (instalação de pacotes, montagem de EFS, e orquestração do Docker).
+
+## Construção do projeto
 ### Fundação da Rede (Configuração da VPC)
 
 A base de toda a infraestrutura foi a criação de uma Virtual Private Cloud (VPC) personalizada, que funciona como uma rede privada e isolada na nuvem. Para garantir a alta disponibilidade, a VPC foi configurada para operar em duas Zonas de Disponibilidade (AZs) distintas.
