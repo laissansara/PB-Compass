@@ -54,3 +54,9 @@ Esta fase focou na configuração dos servidores que rodam a aplicação WordPre
 
 ## Conclusão 
 O projeto foi concluído com sucesso, resultando em uma arquitetura WordPress funcional, segura e de alta disponibilidade na AWS. A implementação abordou conceitos fundamentais de redes em nuvem, serviços gerenciados, automação com `user-data`, containerização com Docker e práticas de depuração sistemática. 
+
+## Anexo: Script de Automação (User Data)
+
+O script `user-data` completo, responsável pela automação da configuração das instâncias EC2, pode ser encontrado no seguinte arquivo:
+
+* ### [user-data.sh](user-data.sh)
