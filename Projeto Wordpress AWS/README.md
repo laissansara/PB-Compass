@@ -7,8 +7,6 @@ desenhada para simular um ambiente de produção, onde a falha de um componente 
 
 ## Tecnologias Utilizadas
 
-Este projeto foi construído utilizando um conjunto de tecnologias modernas para garantir uma arquitetura robusta e escalável na nuvem, com foco em automação e resiliência.
-
 ### Cloud & Infraestrutura AWS
 * **Amazon VPC:** Criação de uma rede privada e isolada com sub-redes públicas e privadas.
 * **Amazon EC2:** Servidores virtuais (instâncias) para hospedar a aplicação.
