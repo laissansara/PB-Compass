@@ -41,3 +41,16 @@ Esta fase focou na configuração dos servidores que rodam a aplicação WordPre
 * **Application Load Balancer (ALB):** Um ALB foi posicionado nas sub-redes públicas para atuar como o único ponto de entrada para o tráfego dos usuários, distribuindo as solicitações para as instâncias saudáveis no Grupo de Destino.
 
 * **Grupos de Segurança (Security Groups):** A segurança da rede foi reforçada com múltiplos grupos de segurança, cada um atuando como um firewall para seu respectivo componente, garantindo uma comunicação controlada e segura entre as camadas da arquitetura.
+
+### Depuração e Resolução de Problemas (Troubleshooting)
+
+ A fase de testes revelou que as instâncias EC2 não estavam atingindo o estado "Healthy". Um processo de depuração foi necessário:
+
+ 1.  **Diagnóstico via Bastion Host:** Foi provisionada uma instância EC2 temporária em uma sub-rede pública (Bastion Host) para obter acesso SSH seguro às instâncias privadas e analisar os logs.
+
+2.  **Correção de DNS da VPC:** A análise do log `user-data` revelou um erro de DNS (`Name or service not known`) ao tentar montar o EFS. A solução foi habilitar as opções "Resolução de DNS" e "Nomes de host DNS" nas configurações da VPC.
+
+3.  **Ajuste do Health Check:** A análise dos logs do Docker (`docker logs`) via Bastion Host mostrou que a aplicação respondia com um código de status HTTP `302` (Redirecionamento). A verificação de saúde (Health Check) do ALB foi ajustada para aceitar tanto `200` quanto `302` como códigos de sucesso, garantindo uma configuração adequada do Health Check.
+
+## Conclusão 
+O projeto foi concluído com sucesso, resultando em uma arquitetura WordPress funcional, segura e de alta disponibilidade na AWS. A implementação abordou conceitos fundamentais de redes em nuvem, serviços gerenciados, automação com `user-data`, containerização com Docker e práticas de depuração sistemática. 
