@@ -13,3 +13,31 @@ A base de toda a infraestrutura foi a criação de uma Virtual Private Cloud (VP
 * **Conectividade com a Internet:** A comunicação com a internet foi estabelecida através de um Internet Gateway (IGW), que foi anexado à VPC. Para permitir que as instâncias nas sub-redes privadas pudessem iniciar conexões com a internet (para atualizações e download de pacotes), foram provisionados NAT Gateways nas sub-redes públicas.
 
 * **Roteamento:** As Tabelas de Rotas foram configuradas para controlar o fluxo de tráfego. A tabela de rota principal, associada às sub-redes públicas, direciona todo o tráfego externo (`0.0.0.0/0`) para o IGW. Tabelas de rotas customizadas, associadas às sub-redes privadas, direcionam o tráfego externo para os NAT Gateways, garantindo o acesso controlado à internet.
+
+### Camada de Persistência de Dados (RDS e EFS)
+
+Com a rede estabelecida, a próxima etapa foi configurar os serviços de armazenamento persistente.
+
+* **Banco de Dados (Amazon RDS):** Para armazenar os dados do WordPress, foi utilizado o Amazon RDS com o mecanismo MySQL. A instância foi configurada como `db.t3.micro` e sem a opção de Multi-AZ habilitada. A instância foi posicionada nas sub-redes privadas de dados para máxima segurança, com um Grupo de Segurança (`rds-sg`) configurado para permitir conexões apenas das instâncias EC2.
+
+* **Armazenamento de Arquivos (Amazon EFS):** Para garantir que os arquivos de mídia (uploads, temas, plugins) fossem consistentes entre todas as instâncias do WordPress, foi implementado o Amazon EFS. Este serviço provê um sistema de arquivos de rede (NFS) que foi montado automaticamente em cada instância EC2 durante a inicialização, via script `user-data`. Um Grupo de Segurança (`efs-sg`) foi criado para permitir o tráfego NFS apenas a partir das instâncias EC2.
+
+### Camada de Aplicação (EC2, Docker e Auto Scaling)
+
+Esta fase focou na configuração dos servidores que rodam a aplicação WordPress.
+
+* **Containerização com Docker:** Seguindo uma abordagem moderna, a aplicação WordPress foi containerizada usando Docker. Isso desacopla a aplicação do sistema operacional, garantindo consistência e portabilidade.
+
+* **Launch Template e User Data:** Um Launch Template foi criado para servir como um "molde" para as instâncias EC2. Ele foi configurado para usar uma AMI do Ubuntu Server 22.04 LTS e um script `user-data` detalhado. Este script foi o coração da automação, responsável por:
+    1.  Instalar o Docker e o Docker Compose.
+    2.  Montar o sistema de arquivos EFS.
+    3.  Criar um arquivo `docker-compose.yml` que define o serviço do WordPress, configurando-o para usar o RDS como banco de dados e o EFS como volume para os arquivos.
+    4.  Iniciar o contêiner do WordPress.
+       
+ * **Auto Scaling Group (ASG):** Foi configurado para gerenciar as instâncias EC2, garantindo que a aplicação seja escalável e resiliente. Ele foi ajustado para manter um mínimo de duas instâncias, distribuídas entre as duas Zonas de Disponibilidade. Uma política de escalonamento baseada na utilização média de CPU foi implementada, permitindo que o ASG adicione ou remova instâncias automaticamente conforme a demanda.
+
+### Ponto de Entrada e Segurança (ALB e Security Groups)
+
+* **Application Load Balancer (ALB):** Um ALB foi posicionado nas sub-redes públicas para atuar como o único ponto de entrada para o tráfego dos usuários, distribuindo as solicitações para as instâncias saudáveis no Grupo de Destino.
+
+* **Grupos de Segurança (Security Groups):** A segurança da rede foi reforçada com múltiplos grupos de segurança, cada um atuando como um firewall para seu respectivo componente, garantindo uma comunicação controlada e segura entre as camadas da arquitetura.
