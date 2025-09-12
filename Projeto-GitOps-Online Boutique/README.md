@@ -110,6 +110,8 @@ Durante a execução, diversos desafios técnicos foram encontrados e superados,
 Ao final do projeto, a aplicação de microserviços "Online Boutique" foi implantada com sucesso e acessada via navegador, validando todo o fluxo GitOps configurado. O estado da aplicação no cluster Kubernetes refletia perfeitamente a configuração declarada no repositório Git, cumprindo todos os objetivos propostos.
 
 
-## Autores
+## Repositório do Projeto
 
-* Laís Sansara Sampaio Silva
+O repositório Git utilizado como base para a configuração do ArgoCD, contendo o manifesto da aplicação, pode ser encontrado no seguinte link:
+
+* **[gitops-microservices](https://github.com/laissansara/gitops-microservices)**
