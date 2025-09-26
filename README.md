@@ -8,4 +8,4 @@ Aqui estão os meus projetos:
 
 * ### [Projeto de GitOps na Prática com Kubernetes e ArgoCD](./Projeto-GitOps-Online%20Boutique/README.md)
 
-* ### [CI/CD com GitHub Actions](.//README.md)
+* ### [CI/CD com GitHub Actions](./CI-CD%20com%20GitHub%20Actions/README.md)
