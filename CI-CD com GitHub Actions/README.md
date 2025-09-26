@@ -83,6 +83,6 @@ A validação do fluxo completo foi realizada da seguinte forma:
     * **No ArgoCD:** Foi observada a aplicação mudar de `Healthy` para `OutOfSync`, depois `Progressing`, e voltar para `Healthy` & `Synced`.
 4.  **Validação Final:** O resultado foi validado acessando a aplicação via `kubectl port-forward`, confirmando que a nova mensagem estava no ar.
 
-## Autor
+## Autora
 
-* **Laís Sansara** - *Desenvolvimento e implementação do pipeline* - [[laissansara]](https://github.com/laissansara)
+* **Laís Sansara S. Silva** - [[laissansara]](https://github.com/laissansara)
