@@ -7,3 +7,5 @@ Aqui estão os meus projetos:
 * ### [Projeto de WordPress em Alta Disponibilidade na AWS](./Projeto%20Wordpress%20AWS/README.md)
 
 * ### [Projeto de GitOps na Prática com Kubernetes e ArgoCD](./Projeto-GitOps-Online%20Boutique/README.md)
+
+* ### [CI/CD com GitHub Actions](.//README.md)
