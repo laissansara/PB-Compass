@@ -39,13 +39,20 @@ O processo de CI/CD foi acionado por um `git push` na branch `main` do `hello-ap
 2.  **Build:** O workflow do GitHub Actions é acionado, fazendo o checkout do código.
 3.  **Empacotamento:** A Action constrói uma nova imagem Docker usando o `Dockerfile`. A imagem é tagueada com o hash do commit do Git, garantindo rastreabilidade.
 4.  **Publicação:** A nova imagem é enviada (push) para o registro no Docker Hub, usando credenciais armazenadas de forma segura nos GitHub Secrets.
+
+![Dockerhub](./imagens/dockerhub.png)
+
 5.  **A Ponte para o GitOps:** Este é o passo crucial. A Action clona o repositório `hello-manifests`, altera programaticamente o arquivo `deployment.yaml` para apontar para a nova tag de imagem, e faz um novo commit. Isso efetivamente declara: "a nova versão da aplicação que deve estar em produção é esta".
+
+![githubactions-funcionando](./imagens/githubactions-funcionando.png)
+
 
 #### Fase 2: CD - Entrega Contínua (Sincronização via ArgoCD)
 
 1.  **Detecção:** O ArgoCD, que está constantemente monitorando o `hello-manifests`, detecta o novo commit feito pelo GitHub Actions.
 2.  **Comparação:** O ArgoCD compara o estado descrito nos manifestos do Git (o "estado desejado") com o que está atualmente rodando no cluster Kubernetes (o "estado atual"). Ele percebe que o cluster está rodando uma imagem antiga e, portanto, está `OutOfSync`.
 3.  **Reconciliação (Deploy):** Como a política de sincronização foi configurada para `Automatic`, o ArgoCD inicia o processo de reconciliação. Ele puxa a nova imagem Docker do Docker Hub e atualiza o Deployment no Kubernetes, que por sua vez realiza um rolling update dos pods da aplicação para a nova versão, sem downtime.
+![atgocd](./imagens/argocd.png)
 
 ## Ferramentas e Pré-requisitos Utilizados
 
@@ -82,6 +89,14 @@ A validação do fluxo completo foi realizada da seguinte forma:
     * **No `hello-manifests`:** Foi verificado o novo commit feito pelo bot `github-actions[bot]`.
     * **No ArgoCD:** Foi observada a aplicação mudar de `Healthy` para `OutOfSync`, depois `Progressing`, e voltar para `Healthy` & `Synced`.
 4.  **Validação Final:** O resultado foi validado acessando a aplicação via `kubectl port-forward`, confirmando que a nova mensagem estava no ar.
+
+O comando `kubectl get pods` confirma que o pod da aplicação está em execução no cluster:
+![atgocd](./imagens/kube.png)
+
+Em seguida, a resposta da aplicação foi verificada no navegador para confirmar que a alteração no código estava no ar.
+![imagem final](./imagens/image.png)
+
+
 
 ## Autora
 
