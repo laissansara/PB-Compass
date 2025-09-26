@@ -1,4 +1,4 @@
-# Projeto de CI/CD com GitHub Actions, ArgoCD e FastAPI
+# Projeto de CI/CD com GitHub Actions e ArgoCD 
 
 Este projeto é uma demonstração prática de um pipeline de automação completo, onde foram implementados os conceitos de **CI/CD (Integração e Entrega Contínua)** através da metodologia **GitOps**. O objetivo principal foi automatizar o ciclo completo de desenvolvimento, build, deploy e execução de uma aplicação FastAPI simples.
 
